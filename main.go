@@ -21,6 +21,8 @@ func main() {
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
 			&cli.BoolFlag{Name: "DBG", Aliases: []string{"D"}, Destination: &Global.DBG, Value: false, Usage: "DBG MOD", Required: false},
 			&cli.StringFlag{Name: "cmd", Aliases: []string{"C"}, Destination: &Global.CMD, Value: "whoami", Usage: "shell command", Required: false},
+			&cli.StringFlag{Name: "pwd", Aliases: []string{"W"}, Destination: &Global.PWD, Value: "", Usage: "pwd", Required: false},
+			&cli.StringFlag{Name: "user", Aliases: []string{"U"}, Destination: &Global.USR, Value: "", Usage: "user", Required: false},
 		},
 		HideHelpCommand: true,
 		Action: func(c *cli.Context) error {

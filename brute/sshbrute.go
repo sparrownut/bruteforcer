@@ -13,26 +13,15 @@ import "bruteforcer/Global"
 var sshBruteUsers = []string{"root"}
 var sshBrutePwds = []string{
 	"123456",
-	"123456789",
-	"12345678",
 	"654321",
-	"1234567890",
 	"password",
-	"987654321",
 	"123123",
-	"super123",
 	"admin",
-	"admin1234",
 	"admin12345",
 	"admin123",
 	"root",
-	"pass123",
 	"root123",
 	"111111",
-	"admin@123",
-	"P@ssw0rd!",
-	"P@ssw0rd",
-	"Passw0rd",
 	"qwe123",
 	"123qwe",
 	"123321",
@@ -41,25 +30,10 @@ var sshBrutePwds = []string{
 	"000000",
 	"00000",
 	"8888888",
-	"!QAZ2wsx",
 	"abc123",
 	"abc123456",
-	"1qaz@WSX",
-	"a12345",
-	"Aa1234",
-	"Aa1234.",
-	"Aa12345",
-	"a123456",
-	"a123123",
-	"Aa123123",
-	"Aa123456",
-	"Aa12345.",
 	"sysadmin",
-	"system",
-	"Aa123456!",
-	"A123456s!",
-	"sa123456",
-	"1q2w3e"}
+	"system"}
 
 func SSHBrute(host string, port string, file *os.File) {
 	if Global.USR != "" {
@@ -75,7 +49,7 @@ func SSHBrute(host string, port string, file *os.File) {
 	for _, user := range sshBruteUsers {
 		for _, pwd := range sshBrutePwds {
 			go doSingleSSHBrute(host, port, user, pwd, &isSuc, file)
-			time.Sleep(time.Duration(300 * time.Microsecond))
+			time.Sleep(time.Duration(500 * time.Microsecond))
 
 		}
 	}

@@ -108,6 +108,7 @@ func SSHBrute(host string, port string, file *os.File) {
 							OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user, pwd)
 							println("err" + OutStr)
 							println(err.Error())
+							return
 						}
 					}
 				}()

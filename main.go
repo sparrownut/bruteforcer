@@ -48,7 +48,7 @@ func do(port string, protocol string) error {
 start: // 在这里循环
 	host := ""
 	_, _ = fmt.Scanln(&host)
-	go dofunc(host, port, outfile, protocol) // 执行
+	dofunc(host, port, outfile, protocol) // 执行
 	goto start
 }
 func dofunc(host string, port string, file *os.File, protocol string) {

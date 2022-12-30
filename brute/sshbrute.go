@@ -78,7 +78,7 @@ var sshBrutePwds = []string{"123456",
 
 func SSHBrute(host string, port string, file *os.File) {
 	if Global.DBG {
-		fmt.Printf("%v开始执行\n", host+port)
+		fmt.Printf("%v开始执行\n", host+":"+port)
 	}
 	for _, user := range sshBruteUsers {
 		for _, pwd := range sshBrutePwds {

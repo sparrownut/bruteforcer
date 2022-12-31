@@ -15,7 +15,7 @@ func main() {
 		Name:      "protocaldetect",
 		Usage:     "judg protocol\n protocol:\nssh\nmysql", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.1.1",
+		Version:   "0.1.4",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "8080", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
@@ -47,7 +47,12 @@ func do(port string, protocol string) error {
 	}(outfile)
 start: // 在这里循环
 	host := ""
-	_, _ = fmt.Scanln(&host)
+
+	//if !terminal.IsTerminal(0) {
+	//	// 如果是管道模式
+	//} else {
+	_, _ = fmt.Scanln(&host) // 管道或输入
+	//}
 	dofunc(host, port, outfile, protocol) // 执行
 	goto start
 }

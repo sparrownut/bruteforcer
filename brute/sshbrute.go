@@ -13,33 +13,16 @@ import "bruteforcer/Global"
 var sshBruteUsers = []string{"root"}
 var sshBrutePwds = []string{
 	"123456",
-	"654321",
-	"password",
-	"123123",
-	"admin",
-	"admin12345",
-	"admin123",
 	"root",
-	"root123",
-	"111111",
-	"qwe123",
-	"123qwe",
-	"123321",
-	"666666",
-	"a123456.",
-	"000000",
-	"00000",
-	"8888888",
-	"abc123",
-	"abc123456",
-	"sysadmin",
-	"system"}
+}
 
 func SSHBrute(host string, port string, file *os.File) {
 	if Global.USR != "" {
+		sshBrutePwds = nil
 		sshBruteUsers = append(sshBruteUsers, Global.USR)
 	}
 	if Global.PWD != "" {
+		sshBrutePwds = nil
 		sshBrutePwds = append(sshBrutePwds, Global.PWD)
 	}
 	isSuc := false
@@ -95,7 +78,7 @@ restart:
 					println("成功")
 				}
 				sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, string(shellOutput))
-				println(sucOutStr)                        // 输出成功信息
+				fmt.Printf(sucOutStr + "\n")              // 输出成功信息
 				_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
 				*isSuc = true
 			} else if Global.DBG {

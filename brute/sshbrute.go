@@ -91,7 +91,7 @@ restart:
 		}
 
 	} else {
-		if (strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "forcibly closed")) && retryN <= 3 {
+		if (strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "forcibly closed") || strings.Contains(err.Error(), "too many")) && retryN <= 3 {
 			goto restart // 如果不是验证错误的重试3次
 		}
 		if Global.DBG {

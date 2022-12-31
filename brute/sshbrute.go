@@ -15,6 +15,7 @@ var sshBrutePwds = []string{
 	"123456",
 	"root",
 }
+var Timeout = 5 * time.Second
 
 func SSHBrute(host string, port string, file *os.File) {
 	if Global.USR != "" {
@@ -58,6 +59,7 @@ restart:
 		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
 			return nil
 		},
+		Timeout: time.Duration(Timeout), // ssh连接超时5s
 	}
 	sshdial, err := ssh.Dial("tcp", host+":"+port, sshConf)
 	if err == nil { //如果密码正确

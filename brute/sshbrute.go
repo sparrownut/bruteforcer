@@ -31,6 +31,7 @@ func SSHBrute(host string, port string, file *os.File) {
 	}
 	for _, user := range sshBruteUsers {
 		for _, pwd := range sshBrutePwds {
+			//go doSingleSSHBrute(host, port, user, pwd, &isSuc, file)
 			go doSingleSSHBrute(host, port, user, pwd, &isSuc, file)
 			time.Sleep(time.Duration(500 * time.Microsecond))
 
@@ -38,6 +39,14 @@ func SSHBrute(host string, port string, file *os.File) {
 	}
 }
 func doSingleSSHBrute(host string, port string, user string, pwd string, isSuc *bool, file *os.File) {
+	defer func() {
+		if r := recover(); r != nil {
+			if Global.DBG {
+				fmt.Println("recover value is", r)
+				fmt.Printf("ERROR INFO host:%v", host)
+			}
+		}
+	}() //处理异常
 	retryN := 0
 restart:
 	retryN++
@@ -91,7 +100,7 @@ restart:
 		}
 
 	} else {
-		if (strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "forcibly closed") || strings.Contains(err.Error(), "too many")) && retryN <= 3 {
+		if (strings.Contains(err.Error(), "EOF") || strings.Contains(err.Error(), "forcibly closed") || strings.Contains(err.Error(), "too many") || strings.Contains(err.Error(), "reset by peer")) && retryN <= 3 {
 			goto restart // 如果不是验证错误的重试3次
 		}
 		if Global.DBG {

@@ -10,6 +10,8 @@ import (
 )
 import "bruteforcer/Global"
 
+var TotalGo = 0
+var SucGo = 0
 var sshBruteUsers = []string{"root"}
 var sshBrutePwds = []string{
 	"123456",
@@ -18,8 +20,9 @@ var sshBrutePwds = []string{
 var Timeout = 5 * time.Second
 
 func SSHBrute(host string, port string, file *os.File) {
+	TotalGo++
 	if Global.USR != "" {
-		sshBrutePwds = nil
+		sshBruteUsers = nil
 		sshBruteUsers = append(sshBruteUsers, Global.USR)
 	}
 	if Global.PWD != "" {
@@ -89,9 +92,11 @@ restart:
 					println("成功")
 				}
 				sucOutStr := fmt.Sprintf("%v:%v-%v:%v=%v->%v", host, port, user, pwd, Global.CMD, string(shellOutput))
-				fmt.Printf(sucOutStr + "\n")              // 输出成功信息
-				_, _ = file.WriteString(sucOutStr + "\n") // 打印信息
+				sucOutStr = strings.ReplaceAll(sucOutStr, "\n", "")
+				fmt.Printf("%v(%v/%v)\n", sucOutStr, SucGo, TotalGo) // 输出成功信息
+				_, _ = file.WriteString(sucOutStr + "\n")            // 打印信息
 				*isSuc = true
+				SucGo++
 			} else if Global.DBG {
 				println(fmt.Sprintf("命令运行错误 %v", runerr))
 			}

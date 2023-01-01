@@ -85,6 +85,7 @@ restart:
 
 			shellOutput, runerr := session.CombinedOutput(Global.CMD)
 			if runerr == nil {
+				SucGo++ // 成功次数+1
 				if *isSuc {
 					return
 				}
@@ -96,7 +97,7 @@ restart:
 				fmt.Printf("%v(%v/%v)\n", sucOutStr, SucGo, TotalGo) // 输出成功信息
 				_, _ = file.WriteString(sucOutStr + "\n")            // 打印信息
 				*isSuc = true
-				SucGo++
+
 			} else if Global.DBG {
 				println(fmt.Sprintf("命令运行错误 %v", runerr))
 			}

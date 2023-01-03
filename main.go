@@ -12,8 +12,8 @@ func main() {
 	port := "8080"
 	protocol := "http"
 	app := &cli.App{
-		Name:      "protocaldetect",
-		Usage:     "judg protocol\n protocol:\nssh\nmysql", // 这里写协议
+		Name:      "bruteforcer",
+		Usage:     "bruteforcer", // 这里写协议
 		UsageText: "lazy to write...",
 		Version:   "0.1.5",
 		Flags: []cli.Flag{

@@ -7,18 +7,18 @@ import (
 	"strings"
 )
 
-var threadN = 0
+var YONYOUNCthreadN = 0
 
 func YonYouNCEXP(host string, cmd string) {
 wait:
-	if threadN <= 5 {
+	if YONYOUNCthreadN <= 5 {
 		go func() {
-			threadN++
+			YONYOUNCthreadN++
 			if Global.DBG {
-				println(fmt.Sprintf("当前进程%v", threadN))
+				println(fmt.Sprintf("当前进程%v", YONYOUNCthreadN))
 			}
 			defer func() {
-				threadN--
+				YONYOUNCthreadN--
 			}()
 			host = strings.ReplaceAll(host, "https://", "")
 			host = strings.ReplaceAll(host, "http://", "")

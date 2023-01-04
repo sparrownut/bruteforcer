@@ -3,6 +3,7 @@ package main
 import (
 	"bruteforcer/Global"
 	"bruteforcer/brute"
+	"bruteforcer/exp"
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -13,9 +14,9 @@ func main() {
 	protocol := "http"
 	app := &cli.App{
 		Name:      "bruteforcer",
-		Usage:     "bruteforcer", // 这里写协议
+		Usage:     "bruteforcer 虽然这么叫 但是是一个exp集合\nssh\nyonyou \n仅供授权的渗透测试使用 请遵守法律!", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.1.5",
+		Version:   "0.3.7",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "22", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
@@ -60,8 +61,10 @@ func dofunc(host string, port string, file *os.File, protocol string) {
 
 	if protocol == "ssh" { //ssh爆破
 		brute.SSHBrute(host, port, file)
+	} else if protocol == "yonyou" {
+		exp.YonYouNCEXP(host, Global.CMD)
 	} else {
-		println("爆破机无此协议")
+		println("exp无此协议")
 		os.Exit(0)
 	}
 	return

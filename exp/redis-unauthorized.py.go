@@ -129,7 +129,7 @@ func do(host string, port string, cmd string) error {
 		shellOutput, runerr := session.CombinedOutput(cmd)
 		if runerr == nil {
 			utils.DBGLOG("SSH执行成功")
-			fmt.Printf("REDIS->SSH %v:%v-%v=%v", host, port, cmd, shellOutput)
+			fmt.Printf("REDIS->SSH %v:%v-%v=%v", host, port, cmd, string(shellOutput))
 		} else {
 			utils.DBGLOG(fmt.Sprintf("命令%v运行错误", cmd))
 			return runerr

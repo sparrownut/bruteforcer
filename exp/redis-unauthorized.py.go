@@ -15,9 +15,11 @@ var REDISthreadN = 0
 
 func sshOpenCheck(host string) bool {
 	dial, connecterr := net.Dial("tcp", host+":22")
-	defer func() {
-		_ = dial.Close()
-	}()
+	if dial != nil {
+		defer func() {
+			_ = dial.Close()
+		}()
+	}
 	if dial == nil {
 		return false
 	}

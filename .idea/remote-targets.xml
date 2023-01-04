@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="roots@hk21.stupidfish.top:22" type="ssh/sftp" uuid="f3bc5e02-af1f-4ac2-b1a9-e3b53d12fc65">
+        <config>
+          <option name="projectRootOnTarget" value="/home/roots/exp/run" />
+          <option name="serverName" value="roots@hk21.stupidfish.top:22 password" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="goPath" value="/home/roots/go" />
+            <option name="goRoot" value="/usr/bin/go" />
+            <option name="goVersion" value="go1.13.8 linux/amd64" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

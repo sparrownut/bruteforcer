@@ -16,7 +16,7 @@ func main() {
 		Name:      "bruteforcer",
 		Usage:     "bruteforcer 虽然这么叫 但是是一个exp集合\nssh\nyonyou\nredis \n仅供授权的渗透测试使用 请遵守法律!", // 这里写协议
 		UsageText: "lazy to write...",
-		Version:   "0.4.4",
+		Version:   "0.4.5",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "port", Aliases: []string{"p"}, Destination: &port, Value: "22", Usage: "port", Required: true},
 			&cli.StringFlag{Name: "protocol", Aliases: []string{"P"}, Destination: &protocol, Value: "ssh", Usage: "protocol", Required: true},
